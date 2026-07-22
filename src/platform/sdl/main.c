@@ -28,7 +28,13 @@
 #include <SDL.h>
 
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
+
+#include <mgba/internal/gba/sio.h>
+#include <mgba/internal/gba/sio/dolphin.h>
+#include <mgba/internal/gba/gba.h>
+#include <mgba-util/socket.h>
 
 #define PORT "sdl"
 
@@ -43,6 +49,25 @@ static struct VFile* _state = NULL;
 static void _loadState(struct mCoreThread* thread) {
 	mCoreLoadStateNamed(thread->core, _state, SAVESTATE_RTC);
 }
+
+static struct GBASIODolphin dol;
+
+static void connectToDolphin(struct mCore* core, const char* ip) {
+	struct GBA* gba = core->board;
+	struct Address addr;
+	int result = SocketResolveHost(ip, &addr);
+	if (result) {
+		fprintf(stderr, "Could not resolve Dolphin address %s (error %d)\n", ip, result);
+		return;
+	}
+
+	GBASIODolphinCreate(&dol);
+	GBASIOSetDriver(&gba->sio, &dol.d);
+	if (!GBASIODolphinConnect(&dol, &addr, 0, 0)) {
+		fprintf(stderr, "Could not connect to Dolphin at %s\n", ip);
+	}
+}
+	
 
 int main(int argc, char** argv) {
 #ifdef _WIN32
@@ -206,6 +231,9 @@ int mSDLRun(struct mSDLRenderer* renderer, struct mArguments* args) {
 	};
 	if (!mCoreLoadFile(renderer->core, args->fname)) {
 		return 1;
+	}
+	if (args->dolphinAddress) {
+	   connectToDolphin(renderer->core, args->dolphinAddress);
 	}
 	mCoreAutoloadSave(renderer->core);
 	mArgumentsApplyFileLoads(args, renderer->core);

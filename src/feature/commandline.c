@@ -35,6 +35,7 @@
 
 static const struct option _options[] = {
 	{ "bios",      required_argument, 0, 'b' },
+	{ "dolphin",   required_argument, 0, 'D' },
 	{ "cheats",    required_argument, 0, 'c' },
 	{ "frameskip", required_argument, 0, 's' },
 #ifdef USE_EDITLINE
@@ -81,7 +82,7 @@ static void _tableApply(const char* key, void* value, void* user) {
 bool mArgumentsParse(struct mArguments* args, int argc, char* const* argv, struct mSubParser* subparsers, int nSubparsers) {
 	int ch;
 	char options[128] =
-		"b:c:C:hl:p:s:t:"
+		"b:c:C:Dhl:p:s:t:"
 #ifdef USE_EDITLINE
 		"d"
 #endif
@@ -138,6 +139,9 @@ bool mArgumentsParse(struct mArguments* args, int argc, char* const* argv, struc
 			break;
 		case 'b':
 			args->bios = strdup(optarg);
+			break;
+		case 'D':
+			args->dolphinAddress = strdup(optarg);
 			break;
 		case 'c':
 			args->cheatsFile = strdup(optarg);
@@ -305,6 +309,9 @@ void mArgumentsDeinit(struct mArguments* args) {
 
 	free(args->bios);
 	args->bios = 0;
+
+	free(args->dolphinAddress);
+	args->dolphinAddress = 0;
 
 	HashTableDeinit(&args->configOverrides);
 }
