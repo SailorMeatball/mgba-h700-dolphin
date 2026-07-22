@@ -5,10 +5,10 @@ flag to the **SDL frontend**, exposing the existing (Qt-only) "Connect to Dolphi
 GBA↔GameCube link-cable feature on Allwinner H700-based handhelds (RG34XX, RG35XXH,
 CubeXX, etc.) running Buildroot-based custom firmware such as KNULLI or muOS.
 
-The stock firmware on these devices only ships mGBA's lightweight SDL build — no Qt,
-no GUI to trigger the Dolphin connection. This patch wires the same core-level
-functionality (already fully implemented in `src/gba/sio/dolphin.c`, used by the Qt
-"File → Connect to Dolphin" menu) into the SDL frontend via a new CLI flag instead.
+The stock firmware or custom firmware on these devices typically comes with the 
+retorarch core for mGBA — no Qt,no GUI to trigger the Dolphin connection. 
+This patch wires the same core-level functionality (already fully implemented in `src/gba/sio/dolphin.c`, 
+used by Qt "File → Connect to Dolphin" menu) into the SDL frontend via a new CLI flag instead.
 
 ## What this actually changes
 
